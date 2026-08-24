@@ -1,0 +1,21 @@
+src/kivo/cli.py
+  s_d449c2eb42e439::t_af58ce0a3346d4 1-109
+src/kivo/server.py
+  s_d449c2eb42e439::t_35010f36db9843 1-181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "28c228ad10aa88fd45561f58c14367b774a83210",
+  "prompts": {},
+  "sessions": {
+    "s_d449c2eb42e439": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8e32918f-8363-4043-9ab0-3dced8b00954",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "daniyarndh <117352341+daniyarndh@users.noreply.github.com>"
+    }
+  }
+}
