@@ -107,3 +107,85 @@ class KivoEngine:
             dialect=dialect
         )
         return executor.execute_query(sql)
+
+    def export_llm_schema(self, model_name: str) -> str:
+        """
+        Generates an LLM-optimized Markdown schema prompt for a loaded model.
+        This prompt instructs an LLM on how to formulate semantic query requests
+        instead of writing raw SQL queries.
+        """
+        model = self.get_model(model_name)
+        
+        dimensions_list = []
+        for d in model.dimensions:
+            dimensions_list.append(f"- **{d.name}** ({d.type}): `{d.sql_expr}`")
+            
+        metrics_list = []
+        for m in model.metrics:
+            metrics_list.append(f"- **{m.name}** ({m.type}): `{m.sql_expr}`")
+            
+        prompt = f"""# SYSTEM INSTRUCTIONS: AI Semantic Query Translator
+
+You are an expert AI Data Analyst. Your sole job is to translate natural language questions from users into a structured JSON query request for the **Kivo Semantic Layer**.
+
+### Your Constraints:
+1. **DO NOT WRITE RAW SQL.** You do not have direct access to database tables or physical columns.
+2. **Strict Output Format:** You must respond ONLY with a valid JSON block containing the query request. Do not add conversational filler, preambles, or markdown outside the JSON block.
+
+---
+
+## 1. Available Semantic Schema for Model: '{model.name}'
+
+### Available Dimensions (Grouping & Filtering):
+{chr(10).join(dimensions_list)}
+
+### Available Metrics (Calculations & Measures):
+{chr(10).join(metrics_list)}
+
+---
+
+## 2. Query Request JSON Schema
+
+Your output must be a JSON object adhering to this schema:
+```json
+{{
+  "model_name": "{model.name}",
+  "dimensions": ["dimension_name_1", "dimension_name_2"],
+  "metrics": ["metric_name_1", "metric_name_2"],
+  "filters": ["filter_expression_1", "filter_expression_2"]
+}}
+```
+
+### Filtering Guidelines:
+- Only filter using the semantic names of dimensions (e.g., `country = 'US'` or `date >= '2026-01-01'`).
+- Combine filters into a list of strings. Each string represents an independent SQL condition (do not join them with AND/OR within the same string; Kivo will automatically combine them with AND).
+- Do not use database-specific dialects for expressions. Use simple standard ANSI SQL operators (`=`, `>`, `<`, `>=`, `<=`, `LIKE`, `IN`).
+
+---
+
+## 3. Reference Examples
+
+### Example 1: Simple Aggregation
+**User Question:** "What is our total revenue and order count by country?"
+**Your JSON Output:**
+```json
+{{
+  "model_name": "{model.name}",
+  "dimensions": ["country"],
+  "metrics": ["total_revenue", "total_orders"]
+}}
+```
+
+### Example 2: Metric-Level & Query-Level Filters
+**User Question:** "Show average order value by date for US completed orders."
+**Your JSON Output:**
+```json
+{{
+  "model_name": "{model.name}",
+  "dimensions": ["date"],
+  "metrics": ["average_order_value"],
+  "filters": ["country = 'US'", "status = 'completed'"]
+}}
+```
+"""
+        return prompt

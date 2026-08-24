@@ -106,3 +106,13 @@ def test_query_endpoint(client):
     assert rows["total_revenue"][us_idx] == 150.0
     assert rows["total_orders"][us_idx] == 2
     assert rows["average_order_value"][us_idx] == 75.0
+
+def test_prompt_endpoint(client):
+    response = client.get("/models/sales/prompt")
+    assert response.status_code == 200
+    data = response.json()
+    assert "prompt" in data
+    prompt = data["prompt"]
+    assert "SYSTEM INSTRUCTIONS" in prompt
+    assert "sales" in prompt
+    assert "total_revenue" in prompt

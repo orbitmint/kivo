@@ -179,3 +179,14 @@ def execute_query(request: QueryRequest, executor: BaseExecutor = Depends(get_ex
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Execution error: {e}")
+
+@app.get("/models/{model_name}/prompt")
+def get_llm_prompt(model_name: str):
+    """Generates an LLM-optimized Markdown system prompt for the specified semantic model."""
+    try:
+        prompt = engine.export_llm_schema(model_name)
+        return {"prompt": prompt}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate prompt: {e}")

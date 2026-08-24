@@ -66,6 +66,25 @@ def handle_compile(args):
         print(f"[ERROR] Compilation failed: {e}", file=sys.stderr)
         sys.exit(1)
 
+def handle_prompt(args):
+    """Generates and prints the AI-Ready Prompt for the specified model."""
+    models_dir = args.models_dir
+    model_name = args.model
+    
+    if not os.path.exists(models_dir):
+        print(f"[ERROR] Models directory '{models_dir}' does not exist.", file=sys.stderr)
+        sys.exit(1)
+        
+    engine = KivoEngine()
+    engine.load_models(models_dir)
+    
+    try:
+        prompt = engine.export_llm_schema(model_name)
+        print(prompt)
+    except Exception as e:
+        print(f"[ERROR] Failed to generate prompt: {e}", file=sys.stderr)
+        sys.exit(1)
+
 def main():
     parser = argparse.ArgumentParser(description="Kivo Semantic Layer CLI tool.")
     subparsers = parser.add_subparsers(dest="command", help="Available subcommands")
@@ -90,6 +109,11 @@ def main():
     compile_parser.add_argument("--dialect", help="Output SQL target dialect (e.g., postgres, clickhouse, duckdb, bigquery)")
     compile_parser.add_argument("--models-dir", default="models", help="Directory containing semantic YAML models (default: models)")
     
+    # Subcommand: prompt
+    prompt_parser = subparsers.add_parser("prompt", help="Generate an AI-Ready Prompt context for LLM agents")
+    prompt_parser.add_argument("--model", required=True, help="Semantic model name")
+    prompt_parser.add_argument("--models-dir", default="models", help="Directory containing semantic YAML models (default: models)")
+    
     # Subcommand: version
     subparsers.add_parser("version", help="Print version info")
     
@@ -99,6 +123,8 @@ def main():
         handle_server_start(args)
     elif args.command == "compile":
         handle_compile(args)
+    elif args.command == "prompt":
+        handle_prompt(args)
     elif args.command == "version":
         print("Kivo Semantic Layer CLI v0.1.0")
     else:
