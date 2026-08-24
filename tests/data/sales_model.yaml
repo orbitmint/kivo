@@ -1,0 +1,27 @@
+name: sales
+table: raw_sales
+dimensions:
+  - name: date
+    type: time
+    expr: transaction_date
+  - name: country
+    type: categorical
+    expr: customer_country
+metrics:
+  - name: total_revenue
+    type: sum
+    expr: amount
+  - name: completed_revenue
+    type: sum
+    expr: amount
+    filters:
+      - status = 'completed'
+  - name: total_orders
+    type: count
+    expr: order_id
+  - name: average_order_value
+    type: derived
+    expr: total_revenue / total_orders
+  - name: completed_average_order_value
+    type: derived
+    expr: completed_revenue / total_orders
