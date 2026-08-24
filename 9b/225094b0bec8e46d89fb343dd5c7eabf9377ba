@@ -1,0 +1,23 @@
+src/kivo/engine.py
+  s_d449c2eb42e439::t_58e11e75288420 1-109
+src/kivo/models/metric.py
+  s_d449c2eb42e439::t_c17d29fd0bf2c9 1-16
+src/kivo/models/model.py
+  s_d449c2eb42e439::t_f95e324da7c8f6 1-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "9b225094b0bec8e46d89fb343dd5c7eabf9377ba",
+  "prompts": {},
+  "sessions": {
+    "s_d449c2eb42e439": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8e32918f-8363-4043-9ab0-3dced8b00954",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "daniyarndh <117352341+daniyarndh@users.noreply.github.com>"
+    }
+  }
+}
