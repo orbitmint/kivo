@@ -53,3 +53,35 @@ def test_model_validation_failures():
             dimensions=[],
             metrics=[]
         )
+
+def test_load_ossie_model():
+    model = load_model_from_yaml("tests/data/ossie_model.yaml")
+    
+    assert model.name == "active_customers_revenue_daily"
+    assert model.table == "analytics.active_customers_revenue_daily"
+    assert model.sql is None
+    
+    # Assert dimensions
+    assert len(model.dimensions) == 3
+    dims = model.dimensions_by_name
+    assert "country_code" in dims
+    assert dims["country_code"].type == "categorical"
+    assert "brand" in dims
+    assert "created_date" in dims
+    assert dims["created_date"].type == "time"
+    
+    # Assert metrics
+    assert len(model.metrics) == 1
+    metrics = model.metrics_by_name
+    assert "active_customers_revenue_daily" in metrics
+    assert metrics["active_customers_revenue_daily"].type == "sum"
+
+def test_load_models_from_directory_with_ossie():
+    from kivo.parser import load_models_from_directory
+    models = load_models_from_directory("tests/data")
+    
+    # We should have sales_model (which has 1 model) and ossie_model (which has 1 model)
+    assert len(models) == 2
+    model_names = [m.name for m in models]
+    assert "sales" in model_names
+    assert "active_customers_revenue_daily" in model_names

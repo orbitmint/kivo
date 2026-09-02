@@ -1,0 +1,25 @@
+version: 0.2.0.dev0
+semantic_model:
+  - name: active_customers_revenue
+    description: "Daily active customers revenue analytics"
+    owner: coredata-team
+    tier: 1
+    datasets:
+      - name: active_customers_revenue_dataset
+        source: analytics.active_customers_revenue_daily
+        fields:
+          - name: country_code
+            dimension: true
+          - name: brand
+            dimension: true
+          - name: created_date
+            dimension:
+              is_time: true
+    metrics:
+      - name: active_customers_revenue_daily
+        description: "Sum of daily active customers revenue"
+        unit: EUR
+        expression:
+          dialects:
+            - dialect: ANSI_SQL
+              expression: "SUM(active_customers_revenue_dataset.revenue)"
